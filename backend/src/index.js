@@ -1,14 +1,14 @@
 import express from "express"
 import { config } from "./config/config.js"
+import router from "./routes/index.js"
 
 const app = express()
 
-app.listen(config.PORT, () => {
-    console.log(`server is runnint at PORT ${config.PORT}`)
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-    res.json({
-        msg: "hii there"
-    })
+app.use("/", router)
+
+app.listen(config.PORT, () => {
+    console.log(`server is running at PORT ${config.PORT}`)
 })
