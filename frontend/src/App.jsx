@@ -1,12 +1,8 @@
-import React from 'react'
-import MasterFormPage from './pages/master-form-page'
+import React from "react";
+import LandingPage from "./components/LandingPage";
 
 const App = () => {
-  return (
-    <div>
-      <MasterFormPage />
-    </div>
-  )
-}
+  return <LandingPage />;
+};
 
-export default App
+export default App;
