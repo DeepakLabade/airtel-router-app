@@ -1,170 +1,167 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import axios from "axios";
 
-export default function InvoiceEntry() {
-  const [models, setModels] = useState([
-    "PMG5617-R20B",
-    "AOT5221Y",
-    "BOHONTC12",
-  ]);
-
+export default function MasterForm() {
   const [formData, setFormData] = useState({
     location: "",
-    model: "",
+    modelName: "",
     itemCode: "",
-    invoiceNo: "",
-    supplierName: "",
-    moNo: "",
-    dcDate: "",
+    invoiceNumber: "",
+    MONumber: "",
+    invoiceDate: "",
     shipmentDate: "",
     receivedDate: "",
     lotQty: "",
     invoiceQty: "",
   });
 
-  const [rows, setRows] = useState([]);
+  const [entries, setEntries] = useState([]);
+  const [message, setMessage] = useState("");
+
+  const locations = ["Pune", "Mumbai", "Ahmedabad", "Hyderabad", "Delhi", "Indore", "Ahainai"];
+  const models = ["PMG5617-R20B", "AOT5221Y", "BOHONTC12"];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const addModel = () => {
-    const newModel = prompt("Enter new model name");
-    if (newModel) setModels([...models, newModel]);
-  };
+  const handleInsert = async () => {
+    try {
+      // Send POST request to backend
+      const res = await axios.post(
+      "http://localhost:3000/admin/master-form",
+      formData
+    );
 
-  const handleInsert = () => {
-    setRows([...rows, formData]);
-    handleClear();
+      if (res.data.success) {
+        setMessage("✅ Data stored successfully!");
+        setEntries([...entries, formData]); // Add to local table
+        setFormData({
+          location: "",
+          modelName: "",
+          itemCode: "",
+          invoiceNumber: "",
+          MONumber: "",
+          invoiceDate: "",
+          shipmentDate: "",
+          receivedDate: "",
+          lotQty: "",
+          invoiceQty: "",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("❌ Failed to store data!");
+    }
   };
 
   const handleClear = () => {
     setFormData({
       location: "",
-      model: "",
+      modelName: "",
       itemCode: "",
-      invoiceNo: "",
-      supplierName: "",
-      moNo: "",
-      dcDate: "",
+      invoiceNumber: "",
+      MONumber: "",
+      invoiceDate: "",
       shipmentDate: "",
       receivedDate: "",
       lotQty: "",
       invoiceQty: "",
     });
-  };
-
-  const handleExit = () => {
-    setRows([]);
+    setMessage("");
   };
 
   return (
     <div className="invoice-bg">
+      <div className="invoice-header">Dish Invoice Entry Stage</div>
 
-      <div className="invoice-header">
-        Dish Invoice Entry Stage
-      </div>
+      <div className="invoice-card">
+        <h3 className="card-title">Invoice Entry (Master Module)</h3>
 
-      <div className="invoice-wrapper">
+        <div className="form-grid">
+          <label>Location :</label>
+          <select name="location" value={formData.location} onChange={handleChange}>
+            <option value="">- Select Location -</option>
+            {locations.map((loc) => <option key={loc}>{loc}</option>)}
+          </select>
 
-        <div className="invoice-card">
-          <h3 className="card-title">Invoice Entry (Master Module)</h3>
+          <label>Model Name :</label>
+          <select name="modelName" value={formData.modelName} onChange={handleChange}>
+            <option value="">- Select Model -</option>
+            {models.map((mod) => <option key={mod}>{mod}</option>)}
+          </select>
 
-          <div className="form-grid">
+          <label>Item Code :</label>
+          <input type="text" name="itemCode" value={formData.itemCode} onChange={handleChange} />
 
-            <label>Location :</label>
-            <select name="location" value={formData.location} onChange={handleChange}>
-              <option>- Select Location -</option>
-              <option>Pune</option>
-              <option>Mumbai</option>
-              <option>Ahmedabad</option>
-              <option>Hyderabad</option>
-              <option>Delhi</option>
-              <option>Indore</option>
-              <option>Chennai</option>
-            </select>
+          <label>DC / Invoice No :</label>
+          <input type="text" name="invoiceNumber" value={formData.invoiceNumber} onChange={handleChange} />
 
-            <label>Model Name :</label>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <select name="model" value={formData.model} onChange={handleChange}>
-                <option>- Select Model -</option>
-                {models.map((m, i) => (
-                  <option key={i}>{m}</option>
-                ))}
-              </select>
-              <button type="button" className="btn" onClick={addModel}>+</button>
-            </div>
+          <label>MO No :</label>
+          <input type="text" name="MONumber" value={formData.MONumber} onChange={handleChange} />
 
-            <label>Item Code :</label>
-            <input name="itemCode" value={formData.itemCode} onChange={handleChange} />
+          <label>DC Date :</label>
+          <input type="date" name="invoiceDate" value={formData.invoiceDate} onChange={handleChange} />
 
-            <label>Supplier Name :</label>
-            <input name="supplierName" value={formData.supplierName} onChange={handleChange} />
+          <label>Shipment Date :</label>
+          <input type="date" name="shipmentDate" value={formData.shipmentDate} onChange={handleChange} />
 
-            <label>DC / Invoice No :</label>
-            <input name="invoiceNo" value={formData.invoiceNo} onChange={handleChange} />
+          <label>Received Date :</label>
+          <input type="date" name="receivedDate" value={formData.receivedDate} onChange={handleChange} />
 
-            <label>MO No :</label>
-            <input name="moNo" value={formData.moNo} onChange={handleChange} />
+          <label>Lot Quantity :</label>
+          <input type="number" name="lotQty" value={formData.lotQty} onChange={handleChange} />
 
-            <label>DC Date :</label>
-            <input type="date" name="dcDate" value={formData.dcDate} onChange={handleChange} />
-
-            <label>Shipment Date :</label>
-            <input type="date" name="shipmentDate" value={formData.shipmentDate} onChange={handleChange} />
-
-            <label>Received Date :</label>
-            <input type="date" name="receivedDate" value={formData.receivedDate} onChange={handleChange} />
-
-            <label>Lot Quantity :</label>
-            <input type="number" name="lotQty" value={formData.lotQty} onChange={handleChange} />
-
-            <label>DC / Invoice Quantity :</label>
-            <input type="number" name="invoiceQty" value={formData.invoiceQty} onChange={handleChange} />
-
-          </div>
-
-          <div className="button-row">
-            <button className="btn primary" onClick={handleInsert}>Insert</button>
-            <button className="btn" onClick={handleClear}>Clear</button>
-            <button className="btn danger" onClick={handleExit}>Exit</button>
-          </div>
+          <label>DC / Invoice Quantity :</label>
+          <input type="number" name="invoiceQty" value={formData.invoiceQty} onChange={handleChange} />
         </div>
 
+        <div className="button-row">
+          <button className="btn primary" onClick={handleInsert}>Insert</button>
+          <button className="btn" onClick={handleClear}>Clear</button>
+        </div>
+
+        {message && <p style={{ color: message.includes("✅") ? "lightgreen" : "red", textAlign: "center" }}>{message}</p>}
       </div>
 
-      {rows.length > 0 && (
+      {/* Excel-like overview table */}
+      {entries.length > 0 && (
         <div className="invoice-table">
-          <table border="1" width="100%">
+          <table>
             <thead>
               <tr>
                 <th>Location</th>
-                <th>Model</th>
+                <th>Model Name</th>
                 <th>Item Code</th>
-                <th>Supplier</th>
-                <th>Invoice No</th>
-                <th>MO No</th>
+                <th>Invoice Number</th>
+                <th>MO Number</th>
+                <th>DC Date</th>
+                <th>Shipment Date</th>
+                <th>Received Date</th>
                 <th>Lot Qty</th>
                 <th>Invoice Qty</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
-                <tr key={i}>
-                  <td>{r.location}</td>
-                  <td>{r.model}</td>
-                  <td>{r.itemCode}</td>
-                  <td>{r.supplierName}</td>
-                  <td>{r.invoiceNo}</td>
-                  <td>{r.moNo}</td>
-                  <td>{r.lotQty}</td>
-                  <td>{r.invoiceQty}</td>
+              {entries.map((e, idx) => (
+                <tr key={idx}>
+                  <td>{e.location}</td>
+                  <td>{e.modelName}</td>
+                  <td>{e.itemCode}</td>
+                  <td>{e.invoiceNumber}</td>
+                  <td>{e.MONumber}</td>
+                  <td>{e.invoiceDate}</td>
+                  <td>{e.shipmentDate}</td>
+                  <td>{e.receivedDate}</td>
+                  <td>{e.lotQty}</td>
+                  <td>{e.invoiceQty}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-
     </div>
   );
 }
