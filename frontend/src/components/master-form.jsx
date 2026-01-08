@@ -36,7 +36,7 @@ export default function MasterForm() {
 
       if (res.data.success) {
         setMessage("✅ Data stored successfully!");
-        setEntries([...entries, formData]); // Add to local table
+        setEntries([...entries, formData]);
         setFormData({
           location: "",
           modelName: "",
@@ -122,7 +122,7 @@ export default function MasterForm() {
           <button className="btn" onClick={handleClear}>Clear</button>
         </div>
 
-        {message && <p style={{ color: message.includes("✅") ? "lightgreen" : "red", textAlign: "center" }}>{message}</p>}
+        {message && <p style={{ color: message.includes("✅") ? "lightgreen" : "red", textAlign: "center" }}>{message}</p>}    
       </div>
 
       {/* Excel-like overview table */}
