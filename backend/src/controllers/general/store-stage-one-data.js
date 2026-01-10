@@ -14,6 +14,14 @@ export const storeStageOneData = async (req, res) => {
       modelNumber,
     } = req.body;
 
+    //  Basic validation
+    if (!MACAddress || !GPONSN || !SerialNumber) {
+      return res.status(400).json({
+        success: false,
+        message: "MACAddress, GPONSN and SerialNumber are required",
+      });
+    }
+
     const dbDir = path.join(process.cwd(), "database");
     const filePath = path.join(dbDir, "demo.xlsx");
 
@@ -40,12 +48,12 @@ export const storeStageOneData = async (req, res) => {
       { header: "Location", key: "location", width: 20 },
       { header: "Invoice Number", key: "invoiceNumber", width: 20 },
       { header: "Model Number", key: "modelNumber", width: 20 },
-      { header: "Entry Date", key: "entryDate", width: 20 },
+      { header: "Entry Date", key: "entryDate", width: 25 },
       { header: "History", key: "history", width: 15 },
       {
         header: "UIDNumber",
         key: "UIDNumber",
-        width: 15,
+        width: 20,
         style: { numFmt: "@" },
       },
     ];
@@ -55,16 +63,14 @@ export const storeStageOneData = async (req, res) => {
     }
 
     let existingRow = null;
-    let existingRowNumber = null;
-
     let lastUID = null;
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber > 1) {
         const existingSerial = row.getCell("SerialNumber").value;
+
         if (existingSerial === SerialNumber) {
           existingRow = row;
-          existingRowNumber = rowNumber;
         }
 
         const uidValue = row.getCell("UIDNumber").value;
@@ -80,13 +86,17 @@ export const storeStageOneData = async (req, res) => {
 
     let historyValue;
     let isUpdate = false;
+    let generatedUID = null; 
 
+    //  UPDATE EXISTING DEVICE
     if (existingRow) {
       isUpdate = true;
+
+      generatedUID = existingRow.getCell("UIDNumber").value;
+
       const currentHistory = existingRow.getCell("history").value || "R0";
       const currentNumber = parseInt(currentHistory.replace("R", ""));
-      const newNumber = currentNumber + 1;
-      historyValue = `R${newNumber}`;
+      historyValue = `R${currentNumber + 1}`;
 
       existingRow.getCell("MACAddress").value = MACAddress;
       existingRow.getCell("GPONSN").value = GPONSN;
@@ -95,10 +105,14 @@ export const storeStageOneData = async (req, res) => {
       existingRow.getCell("modelNumber").value = modelNumber;
       existingRow.getCell("entryDate").value = new Date().toISOString();
       existingRow.getCell("history").value = historyValue;
+
       existingRow.commit();
-    } else {
-      const UIDNumber = generateUIDNumber(lastUID);
+    }
+    // CREATE NEW DEVICE
+    else {
+      generatedUID = generateUIDNumber(lastUID);
       historyValue = "R0";
+
       worksheet.addRow({
         MACAddress,
         GPONSN,
@@ -106,7 +120,7 @@ export const storeStageOneData = async (req, res) => {
         location,
         invoiceNumber,
         modelNumber,
-        UIDNumber,
+        UIDNumber: generatedUID,
         entryDate: new Date().toISOString(),
         history: historyValue,
       });
@@ -114,6 +128,7 @@ export const storeStageOneData = async (req, res) => {
 
     await workbook.xlsx.writeFile(filePath);
 
+    //  RETURN UID TO FRONTEND
     return res.status(isUpdate ? 200 : 201).json({
       success: true,
       message: isUpdate
@@ -121,9 +136,10 @@ export const storeStageOneData = async (req, res) => {
         : "Device data stored successfully",
       history: historyValue,
       action: isUpdate ? "updated" : "created",
+      UIDNumber: generatedUID, 
     });
   } catch (error) {
-    console.error("Excel Error:", error);
+    console.error(" Excel Error:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
