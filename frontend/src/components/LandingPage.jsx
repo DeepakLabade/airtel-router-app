@@ -2,6 +2,9 @@ import { useState } from "react";
 import Modal from "./Modal";
 import MasterForm from "./master-form";
 import landingImage from "../assets/landing-image.png";
+import Stage1Form from "./Stage1Form";
+import Stage2Form from "./Stage2Form";
+
 
 const LandingPage = () => {
   const [openMaster, setOpenMaster] = useState(false);
@@ -65,9 +68,22 @@ const LandingPage = () => {
       </Modal>
 
       <Modal isOpen={!!activeStage} onClose={closeStageModal}>
-        <h2>{activeStage}</h2>
-        <p>This is the screen for {activeStage}</p>
-      </Modal>
+  {activeStage === "Ist Stage" && (
+    <>
+      <h2>Stage 1</h2>
+      <Stage1Form />
+    </>
+  )}
+
+ {activeStage === "IInd Stage" && (
+  <>
+    <h2>Stage 2</h2>
+    <Stage2Form onSuccess={closeStageModal} />
+  </>
+)}
+
+</Modal>
+
 
     </div>
   );
