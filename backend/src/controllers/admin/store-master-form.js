@@ -36,6 +36,7 @@ export const storeMasterForm = async (req, res) => {
       worksheet = workbook.addWorksheet("Users");
     }
 
+    // --- UPDATED COLUMNS ---
     worksheet.columns = [
       { header: "Location", key: "location", width: 20 },
       { header: "Model Name", key: "modelName", width: 25 },
@@ -47,11 +48,15 @@ export const storeMasterForm = async (req, res) => {
       { header: "Received Date", key: "receivedDate", width: 20 },
       { header: "Lot Qty", key: "lotQty", width: 15 },
       { header: "Invoice Qty", key: "invoiceQty", width: 15 },
+      { header: "Created At", key: "createdAt", width: 20 },
     ];
 
     if (worksheet.rowCount === 0) {
       worksheet.getRow(1).font = { bold: true };
     }
+
+    // Generate current date/time
+    const currentEntryDate = new Date().toLocaleString(); // Format: "1/13/2026, 7:55:00 AM"
 
     worksheet.addRow({
       location,
@@ -64,6 +69,7 @@ export const storeMasterForm = async (req, res) => {
       receivedDate: receivedDate ? String(receivedDate) : "",
       lotQty,
       invoiceQty,
+      createdAt: currentEntryDate, // SETTING THE CURRENT DATE
     });
 
     await workbook.xlsx.writeFile(filePath);
@@ -71,9 +77,10 @@ export const storeMasterForm = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Data stored successfully",
+      entryTime: currentEntryDate,
     });
   } catch (error) {
-    console.error("❌ Excel Error:", error);
+    console.error("Excel Error:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
