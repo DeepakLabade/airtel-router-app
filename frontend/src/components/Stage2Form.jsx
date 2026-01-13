@@ -52,16 +52,13 @@ export default function Stage2Form() {
   /* -------- SAVE STAGE 2 -------- */
   const handleSave = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/stage2",
-        {
-          UIDNumber,
-          Defect_symptom,
-          repair_contents,
-          remark,
-          engineerId,
-        }
-      );
+      const res = await axios.post("http://localhost:3000/stage-02", {
+        UIDNumber,
+        Defect_symptom,
+        repair_contents,
+        // remark,
+        // engineerId,
+      });
 
       if (res.data.success) {
         setMessage(`✅ ${res.data.message}`);
