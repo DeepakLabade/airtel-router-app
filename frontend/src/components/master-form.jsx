@@ -19,12 +19,35 @@ export default function MasterForm() {
   const [message, setMessage] = useState("");
 
   const locations = ["Pune", "Mumbai", "Ahmedabad", "Hyderabad", "Delhi", "Indore", "Ahainai"];
-  const models = ["PMG5617-R20B", "AOT5221Y", "BOHONTC12"];
+  const models = ["PMG5617-R20B", "AOT5221Y"];
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const { name, value } = e.target;
+
+  // Model-based item code logic
+  if (name === "modelName") {
+    if (value === "PMG5617-R20B") {
+      setFormData({
+        ...formData,
+        modelName: value,
+        itemCode: "CPE000451", // auto set
+      });
+      return;
+    }
+
+    if (value === "AOT5221Y") {
+      setFormData({
+        ...formData,
+        modelName: value,
+        itemCode: "", // user must select
+      });
+      return;
+    }
+  }
+
+  setFormData({ ...formData, [name]: value });
+};
+
 
   const handleInsert = async () => {
     try {
@@ -92,8 +115,30 @@ export default function MasterForm() {
             {models.map((mod) => <option key={mod}>{mod}</option>)}
           </select>
 
-          <label>Item Code :</label>
-          <input type="text" name="itemCode" value={formData.itemCode} onChange={handleChange} />
+         <label>Item Code :</label> {/* PMG5617-R20B → Auto-filled */}
+         {formData.modelName === "PMG5617-R20B" && (
+          <input type="text" name="itemCode" value={formData.itemCode} readOnly />  )}
+          {/* AOT5221Y → Dropdown */}
+          {formData.modelName === "AOT5221Y" && (
+            <select
+              name="itemCode"
+              value={formData.itemCode}
+              onChange={handleChange} >
+              <option value="">- Select Item Code -</option>
+              <option value="BOHONTCI2">BOHONTCI2</option>
+              <option value="BOHONTVD8">BOHONTVD8</option>
+            </select>
+          )}
+
+          {/* No model selected */}
+          {!formData.modelName && (
+            <input
+              type="text"
+              disabled
+              placeholder="Select model first"
+            />
+          )}
+
 
           <label>DC / Invoice No :</label>
           <input type="text" name="invoiceNumber" value={formData.invoiceNumber} onChange={handleChange} />

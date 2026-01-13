@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import JsBarcode from "jsbarcode";
 
 export default function Stage1Form() {
   const [step, setStep] = useState(1);
@@ -16,10 +17,24 @@ export default function Stage1Form() {
   const [scanInput, setScanInput] = useState("");
   const [UIDNumber, setUIDNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+
+  const barcodeRef = useRef(null);
 
   const locations = ["Pune", "Mumbai", "Ahmedabad", "Hyderabad"];
   const models = ["PMG5617-R20B", "AOT5221Y", "BOHONTC12"];
+
+  /* ---------------- BARCODE GENERATION ---------------- */
+  useEffect(() => {
+    if (UIDNumber && barcodeRef.current) {
+      JsBarcode(barcodeRef.current, UIDNumber.toString(), {
+        format: "CODE128",
+        width: 2,
+        height: 60,
+        displayValue: true,
+      });
+    }
+  }, [UIDNumber]);
 
   /* ---------------- HANDLE SCAN ---------------- */
   const handleScanSubmit = async (e) => {
@@ -49,39 +64,48 @@ export default function Stage1Form() {
       setStep(4);
       setScanInput("");
 
-  
       await generateUID(updatedData);
     }
   };
 
-  /* calling backend */
+  /* ---------------- BACKEND CALL ---------------- */
   const generateUID = async (payload) => {
     try {
       setLoading(true);
-
-      console.log(" Sending Stage-01:", payload);
 
       const res = await axios.post(
         "http://localhost:3000/stage-01",
         payload
       );
 
-      console.log(" Stage-01 response:", res.data);
-
       if (res.data.success) {
         setUIDNumber(res.data.UIDNumber);
-        setMessage(" UID generated successfully");
+        setMessage("UID generated successfully");
       }
     } catch (err) {
-      console.error(" UID error:", err);
-      setMessage(
-        err.response?.data?.message || " Failed to generate UID"
-      );
+      setMessage(err.response?.data?.message || "UID generation failed");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ---------------- PRINT BARCODE ---------------- */
+  const handlePrint = () => {
+    const content = document.getElementById("barcode-print");
+    const win = window.open("", "", "width=600,height=400");
+
+    win.document.write(`
+      <html>
+        <body onload="window.print();window.close()">
+          ${content.innerHTML}
+        </body>
+      </html>
+    `);
+
+    win.document.close();
+  };
+
+  /* ---------------- CLEAR FORM ---------------- */
   const handleClear = () => {
     setFormData({
       location: "",
@@ -98,19 +122,18 @@ export default function Stage1Form() {
   };
 
   return (
-    <div
-      className="invoice-bg"
-      style={{ maxWidth: "1600px", margin: "auto", fontSize: "18px" }}
-    >
+    <div className="invoice-bg" style={{ maxWidth: "1600px", margin: "auto" }}>
       <div className="invoice-header">Device Entry – Stage 1</div>
 
-      {/* TOP BOX */}
+      {/* MASTER DETAILS */}
       <div className="invoice-card" style={{ position: "relative" }}>
         <button
           className="btn"
           style={{ position: "absolute", right: 15, top: 15 }}
+          onClick={handlePrint}
+          disabled={!UIDNumber}
         >
-          Test Print
+          Print Barcode
         </button>
 
         <h3 className="card-title">Master Details</h3>
@@ -149,7 +172,7 @@ export default function Stage1Form() {
         </div>
       </div>
 
-      {/* MIDDLE BOX */}
+      {/* SCAN BOX */}
       <div className="invoice-card" style={{ marginTop: 25 }}>
         <h3 className="card-title">
           {step === 1 && "Scan MAC Address"}
@@ -168,15 +191,18 @@ export default function Stage1Form() {
             style={{ width: "95%", fontSize: 18 }}
           />
         ) : (
-          <h2 style={{ color: "lightgreen" }}>
-            UID : {UIDNumber}
-          </h2>
+          <div id="barcode-print" style={{ textAlign: "center" }}>
+            <h2 style={{ color: "lightgreen" }}>
+              UID : {UIDNumber}
+            </h2>
+            <svg ref={barcodeRef}></svg>
+          </div>
         )}
 
         {loading && <p style={{ color: "yellow" }}>Generating UID...</p>}
       </div>
 
-      {/* BOTTOM BOX */}
+      {/* DETAILS */}
       <div className="invoice-card" style={{ marginTop: 25 }}>
         <h3 className="card-title">Scanned Details</h3>
 
