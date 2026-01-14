@@ -233,6 +233,63 @@ export default function Stage2Form() {
           {renderRepairRow("Repair Content 04", repair04, setRepair04)}
           {renderRepairRow("Repair Content 05", repair05, setRepair05)}
 
+             <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>
+
+          <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>
+
+          <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>  
+ 
           <label>Remark :</label>
           <input value={remark} onChange={(e) => setRemark(e.target.value)} />
 
