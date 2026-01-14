@@ -73,10 +73,7 @@ export default function Stage1Form() {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:3000/stage-01",
-        payload
-      );
+      const res = await axios.post("http://localhost:3000/stage-01", payload);
 
       if (res.data.success) {
         setUIDNumber(res.data.UIDNumber);
@@ -192,9 +189,7 @@ export default function Stage1Form() {
           />
         ) : (
           <div id="barcode-print" style={{ textAlign: "center" }}>
-            <h2 style={{ color: "lightgreen" }}>
-              UID : {UIDNumber}
-            </h2>
+            <h2 style={{ color: "lightgreen" }}>UID : {UIDNumber}</h2>
             <svg ref={barcodeRef}></svg>
           </div>
         )}
@@ -222,9 +217,7 @@ export default function Stage1Form() {
       </div>
 
       {message && (
-        <p style={{ textAlign: "center", color: "lightgreen" }}>
-          {message}
-        </p>
+        <p style={{ textAlign: "center", color: "lightgreen" }}>{message}</p>
       )}
     </div>
   );

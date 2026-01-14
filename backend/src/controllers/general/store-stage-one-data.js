@@ -4,6 +4,7 @@ import ExcelJS from "exceljs";
 import { generateUIDNumber } from "../../utils/generate-UID.js";
 
 export const storeStageOneData = async (req, res) => {
+  console.log("entered")
   try {
     const {
       MACAddress,
