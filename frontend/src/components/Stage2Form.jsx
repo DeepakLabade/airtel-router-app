@@ -9,6 +9,7 @@ export default function Stage2Form() {
     "LED Issue",
     "Network Issue",
   ]);
+
   const [repairList, setRepairList] = useState([
     "Component Replacement",
     "Firmware Update",
@@ -36,6 +37,7 @@ export default function Stage2Form() {
   const [activeRepairField, setActiveRepairField] = useState(null);
   const [miniValue, setMiniValue] = useState("");
 
+  /* ---------------- FETCH DEVICE DETAILS ---------------- */
   useEffect(() => {
     if (!UIDNumber) {
       setDeviceDetails(null);
@@ -45,20 +47,15 @@ export default function Stage2Form() {
 
     const fetchDeviceDetails = async () => {
       try {
-        console.log("entered")
         setUidLoading(true);
-        setUidError("");
-
         const res = await axios.get(
           `http://localhost:3000/device/${UIDNumber}`
         );
 
-        console.log("response : " + res)
-
         if (res.data.success) {
           setDeviceDetails(res.data.data);
         }
-      } catch (err) {
+      } catch {
         setDeviceDetails(null);
         setUidError("UID not found in database");
       } finally {
@@ -69,9 +66,10 @@ export default function Stage2Form() {
     fetchDeviceDetails();
   }, [UIDNumber]);
 
-  const openMiniForm = (type, fieldSetter = null) => {
+  /* ---------------- MINI FORM ---------------- */
+  const openMiniForm = (type, setter = null) => {
     setMiniFormType(type);
-    setActiveRepairField(() => fieldSetter);
+    setActiveRepairField(() => setter);
     setMiniValue("");
     setShowMiniForm(true);
   };
@@ -80,16 +78,17 @@ export default function Stage2Form() {
     if (!miniValue) return;
 
     if (miniFormType === "defect") {
-      setDefectList([...defectList, miniValue]);
+      setDefectList((p) => [...p, miniValue]);
       setDefectSymptom(miniValue);
     } else {
-      setRepairList([...repairList, miniValue]);
-      if (activeRepairField) activeRepairField(miniValue);
+      setRepairList((p) => [...p, miniValue]);
+      activeRepairField && activeRepairField(miniValue);
     }
 
     setShowMiniForm(false);
   };
 
+  /* ---------------- SAVE ---------------- */
   const handleSave = async () => {
     if (!deviceDetails) {
       setMessage("❌ Please scan a valid UID first");
@@ -108,15 +107,15 @@ export default function Stage2Form() {
       });
 
       if (res.data.success) {
-        setMessage(`✅ ${res.data.message}`);
+        setMessage("✅ Stage 2 data saved successfully");
         handleClear();
       }
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Failed to save data");
+      setMessage(err.response?.data?.message || "❌ Save failed");
     }
   };
 
-  /* ---------- CLEAR ---------- */
+  /* ---------------- CLEAR ---------------- */
   const handleClear = () => {
     setUIDNumber("");
     setDeviceDetails(null);
@@ -158,53 +157,38 @@ export default function Stage2Form() {
     <div className="invoice-bg">
       <div className="invoice-header">Airtel Rework – Stage 2</div>
 
-      {/* UID SCAN */}
-      <div className="invoice-card" style={{ marginBottom: "25px" }}>
-        <h3 className="card-title">Scan UID</h3>
+      {/* UID */}
+      <div className="invoice-card">
+        <h3>Scan UID</h3>
         <input
-          type="text"
           value={UIDNumber}
           onChange={(e) => setUIDNumber(e.target.value)}
           placeholder="Scan UID here"
-          style={{ width: "95%", fontSize: "18px", height: "30px" }}
         />
-
-        {uidLoading && (
-          <p style={{ marginTop: "10px", color: "yellow" }}>
-            Fetching device details...
-          </p>
-        )}
-
-        {uidError && (
-          <p style={{ marginTop: "10px", color: "red" }}>{uidError}</p>
-        )}
+        {uidLoading && <p>Fetching device details...</p>}
+        {uidError && <p style={{ color: "red" }}>{uidError}</p>}
       </div>
 
       {/* DEVICE DETAILS */}
       {deviceDetails && (
         <div className="invoice-card">
-          <h3 className="card-title">Device Details</h3>
-
+          <h3>Device Details</h3>
           <div className="form-grid">
-            <label>MAC Address :</label>
+            <label>MAC :</label>
             <input value={deviceDetails.MACAddress} disabled />
-
-            <label>GPON SN :</label>
+            <label>GPON :</label>
             <input value={deviceDetails.GPONSN} disabled />
-
-            <label>Serial Number :</label>
+            <label>Serial :</label>
             <input value={deviceDetails.SerialNumber} disabled />
-
-            <label>Model Number :</label>
+            <label>Model :</label>
             <input value={deviceDetails.modelNumber} disabled />
           </div>
         </div>
       )}
 
-      {/* REPAIR DETAILS */}
+      {/* REPAIR */}
       <div className="invoice-card">
-        <h3 className="card-title">Repair Details</h3>
-
+        <h3>Repair Details</h3>
         <div className="form-grid">
           <label>Defect Symptom :</label>
           <div className="inline">
@@ -214,17 +198,10 @@ export default function Stage2Form() {
             >
               <option value="">Select</option>
               {defectList.map((d, i) => (
-                <option key={i} value={d}>
-                  {d}
-                </option>
+                <option key={i}>{d}</option>
               ))}
             </select>
-            <button
-              className="btn-small"
-              onClick={() => openMiniForm("defect")}
-            >
-              Add
-            </button>
+            <button onClick={() => openMiniForm("defect")}>Add</button>
           </div>
 
           {renderRepairRow("Repair Content 01", repair01, setRepair01)}
@@ -232,128 +209,31 @@ export default function Stage2Form() {
           {renderRepairRow("Repair Content 03", repair03, setRepair03)}
           {renderRepairRow("Repair Content 04", repair04, setRepair04)}
           {renderRepairRow("Repair Content 05", repair05, setRepair05)}
-
-             <label>Repair Contents :</label>
-          <div className="inline">
-            <select
-              value={repair_contents}
-              onChange={(e) => setRepairContents(e.target.value)}
-            >
-              <option value="">Select</option>
-              {repairList.map((r, i) => (
-                <option key={i}>{r}</option>
-              ))}
-            </select>
-            <button
-              className="btn-small"
-              onClick={() => openMiniForm("repair")}
-            >
-              Add
-            </button>
-          </div>
-
-          <label>Repair Contents :</label>
-          <div className="inline">
-            <select
-              value={repair_contents}
-              onChange={(e) => setRepairContents(e.target.value)}
-            >
-              <option value="">Select</option>
-              {repairList.map((r, i) => (
-                <option key={i}>{r}</option>
-              ))}
-            </select>
-            <button
-              className="btn-small"
-              onClick={() => openMiniForm("repair")}
-            >
-              Add
-            </button>
-          </div>
-
-          <label>Repair Contents :</label>
-          <div className="inline">
-            <select
-              value={repair_contents}
-              onChange={(e) => setRepairContents(e.target.value)}
-            >
-              <option value="">Select</option>
-              {repairList.map((r, i) => (
-                <option key={i}>{r}</option>
-              ))}
-            </select>
-            <button
-              className="btn-small"
-              onClick={() => openMiniForm("repair")}
-            >
-              Add
-            </button>
-          </div>  
- 
-          <label>Remark :</label>
-          <input value={remark} onChange={(e) => setRemark(e.target.value)} />
-
-          <label>Repair Engineer ID :</label>
-          <input
-            value={engineerId}
-            onChange={(e) => setEngineerId(e.target.value)}
-          />
         </div>
 
         <div className="button-row">
-          <button className="btn primary" onClick={handleSave}>
-            Save
-          </button>
-          <button className="btn danger" onClick={handleClear}>
-            Clear
-          </button>
+          <button onClick={handleSave}>Save</button>
+          <button onClick={handleClear}>Clear</button>
         </div>
       </div>
 
-      {/* MINI FORM MODAL */}
+      {/* MINI MODAL */}
       {showMiniForm && (
         <div className="modal-overlay">
-          <div className="modal-box" style={{ width: "400px" }}>
-            <h3 style={{ marginBottom: "15px" }}>
-              Add New {miniFormType === "defect" ? "Defect" : "Repair Item"}
-            </h3>
-
+          <div className="modal-box">
+            <h3>Add New {miniFormType}</h3>
             <input
-              type="text"
               value={miniValue}
               onChange={(e) => setMiniValue(e.target.value)}
-              placeholder={`Enter new ${miniFormType}`}
-              style={{ width: "100%", fontSize: "18px" }}
               autoFocus
             />
-
-            <div className="button-row" style={{ marginTop: "20px" }}>
-              <button className="btn primary" onClick={saveMiniForm}>
-                Save
-              </button>
-              <button
-                className="btn danger"
-                onClick={() => setShowMiniForm(false)}
-              >
-                Cancel
-              </button>
-            </div>
+            <button onClick={saveMiniForm}>Save</button>
+            <button onClick={() => setShowMiniForm(false)}>Cancel</button>
           </div>
         </div>
       )}
 
-      {message && (
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "20px",
-            color: message.includes("✅") ? "lightgreen" : "red",
-            fontSize: "18px",
-          }}
-        >
-          {message}
-        </p>
-      )}
+      {message && <p style={{ textAlign: "center" }}>{message}</p>}
     </div>
   );
 }
