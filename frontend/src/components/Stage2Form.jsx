@@ -140,6 +140,63 @@ export default function Stage2Form() {
             </button>
           </div>
 
+             <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>
+
+          <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>
+
+          <label>Repair Contents :</label>
+          <div className="inline">
+            <select
+              value={repair_contents}
+              onChange={(e) => setRepairContents(e.target.value)}
+            >
+              <option value="">Select</option>
+              {repairList.map((r, i) => (
+                <option key={i}>{r}</option>
+              ))}
+            </select>
+            <button
+              className="btn-small"
+              onClick={() => openMiniForm("repair")}
+            >
+              Add
+            </button>
+          </div>  
+ 
           <label>Remark :</label>
           <input
             type="text"
