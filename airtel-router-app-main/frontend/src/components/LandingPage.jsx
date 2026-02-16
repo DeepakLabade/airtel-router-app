@@ -3,7 +3,10 @@ import Modal from "./Modal";
 import MasterForm from "./master-form";
 import landingImage from "../assets/landing-image.png";
 import Stage1Form from "./Stage1Form";
-import Stage2Form from "./Stage2Form";
+import Stage2Form from "./Stage2Form"; 
+import Stage3Form from "./Stage3Form";
+import Stage4Form from "./Stage4Form";
+import Stage5Form from "./Stage5Form";
 
 
 const LandingPage = () => {
@@ -79,6 +82,24 @@ const LandingPage = () => {
   <>
     <h2>Stage 2</h2>
     <Stage2Form onSuccess={closeStageModal} />
+  </>
+)}
+{activeStage === "IIIrd Stage" && (
+  <>
+    <h2>Stage 3</h2>
+    <Stage3Form onSuccess={closeStageModal} />
+  </>
+)}
+{activeStage === "IVth Stage MultiPack Print" && (
+  <>
+    <h2>Stage 4</h2>
+    <Stage4Form onSuccess={closeStageModal} />
+  </>
+)}
+{activeStage === "BSR File Generation and Upload" && (
+  <>
+    <h2>Stage 5</h2>
+    <Stage5Form onSuccess={closeStageModal} />
   </>
 )}
 
