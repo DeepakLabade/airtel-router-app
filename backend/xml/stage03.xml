@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XMLScript Version="2.0">
+  <Command Name="PrintDeviceLabel">
+    <Print>
+      <Format>C:\Users\DEEPAK\Downloads\Bartender Feb 2026\Wifi 5\stage-03.btw</Format>
+
+      <PrintSetup>
+        <IdenticalCopiesOfLabel>1</IdenticalCopiesOfLabel>
+      </PrintSetup>
+
+      <NamedSubString Name="ModelNo">
+        <Value>324oidr</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="SerialNumber">
+        <Value>SN12er3456789</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="MacAddress">
+        <Value>q23sd123</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="GponNo">
+        <Value>GPON987er654</Value>
+      </NamedSubString>
+
+    </Print>
+  </Command>
+</XMLScript>

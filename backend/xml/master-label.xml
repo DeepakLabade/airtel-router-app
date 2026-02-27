@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XMLScript Version="2.0">
+  <Command Name="MasterLabelPrint">
+    <Print>
+
+      <!-- MASTER BTW FILE PATH -->
+      <Format>
+        C:\Users\DEEPAK\Downloads\80X120  Wifi 6 MASTER PRINT Nov 2025.btw
+      </Format>
+
+      <PrintSetup>
+        <IdenticalCopiesOfLabel>1</IdenticalCopiesOfLabel>
+      </PrintSetup>
+
+      <!-- GPON VALUES -->
+
+      <NamedSubString Name="Gpon1">
+        <Value>GPON001</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon2">
+        <Value>GPON002</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon3">
+        <Value>GPON003</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon4">
+        <Value>GPON004</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon5">
+        <Value>GPON005</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon6">
+        <Value>GPON006</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon7">
+        <Value>GPON007</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon8">
+        <Value>GPON008</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="Gpon9">
+        <Value>GPON009</Value>
+      </NamedSubString>
+
+    </Print>
+  </Command>
+</XMLScript>

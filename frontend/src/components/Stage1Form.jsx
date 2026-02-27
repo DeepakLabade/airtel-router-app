@@ -86,23 +86,34 @@ export default function Stage1Form() {
     }
   };
 
-  /* ---------------- PRINT BARCODE ---------------- */
-  const handlePrint = () => {
-    const content = document.getElementById("barcode-print");
-    const win = window.open("", "", "width=600,height=400");
+  
+const handlePrint = async () => {
+  if (!UIDNumber) {
+    alert("UID not generated");
+    return;
+  }
 
-    win.document.write(`
-      <html>
-        <body onload="window.print();window.close()">
-          ${content.innerHTML}
-        </body>
-      </html>
-    `);
+  try {
+    const res = await axios.post("http://localhost:3000/print-UID-label", {
+      uid: UIDNumber,
+    });
 
-    win.document.close();
-  };
+    if (res.data.success) {
+      alert("Printed Successfully");
+    } else {
+      alert("Print failed");
+    }
+  } catch (error) {
+    console.log("PRINT ERROR FULL:", error);
+    alert(
+      error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Server error",
+    );
+  }
+};
 
-  /* ---------------- CLEAR FORM ---------------- */
+
   const handleClear = () => {
     setFormData({
       location: "",

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XMLScript Version="2.0">
+  <Command Name="MasterLabelPrint">
+    <Print>
+
+      <Format><![CDATA[C:\Users\DEEPAK\Downloads\Bartender Feb 2026\wIFI 6\80X120  Wifi 6 MASTER PRINT Nov 2025.btw]]></Format>
+
+      <PrintSetup>
+        <IdenticalCopiesOfLabel>1</IdenticalCopiesOfLabel>
+      </PrintSetup>
+
+      
+      <NamedSubString Name="Gpon1">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon2">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon3">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon4">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon5">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon6">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon7">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon8">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+      <NamedSubString Name="Gpon9">
+        <Value>ZYOTFF094118</Value>
+      </NamedSubString>
+
+      <NamedSubString Name="MasterQR">
+        <Value>ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118|ZYOTFF094118</Value>
+      </NamedSubString>
+
+    </Print>
+  </Command>
+</XMLScript>
