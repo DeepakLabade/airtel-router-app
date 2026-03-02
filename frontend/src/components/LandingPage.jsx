@@ -2,9 +2,11 @@ import { useState } from "react";
 import Modal from "./Modal";
 import MasterForm from "./master-form";
 import landingImage from "../assets/landing-image.png";
+
 import Stage1Form from "./Stage1Form";
 import Stage2Form from "./Stage2Form";
-
+import Stage3Form from "./Stage3Form";
+import Stage4Form from "./Stage4Form"
 
 const LandingPage = () => {
   const [openMaster, setOpenMaster] = useState(false);
@@ -20,8 +22,29 @@ const LandingPage = () => {
     setActiveStage("");
   };
 
+  const renderStageForm = () => {
+    switch (activeStage) {
+      case "Ist Stage":
+        return <Stage1Form onSuccess={closeStageModal} />;
+
+      case "IInd Stage":
+        return <Stage2Form onSuccess={closeStageModal} />;
+
+      case "IIIrd Stage":
+        return <Stage3Form onSuccess={closeStageModal} />;
+
+      case "IVth Stage MultiPack Print":
+        return <Stage4Form onSuccess={closeStageModal} />;
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="landing-container">
+
+      {/* Top Navigation */}
       <div className="top-bar">
 
         <button
@@ -38,6 +61,7 @@ const LandingPage = () => {
           >
             Stage
           </button>
+
           {showStageDropdown && (
             <div className="stage-menu">
               <div onClick={() => handleStageSelect("Ist Stage")}>Ist Stage</div>
@@ -46,15 +70,13 @@ const LandingPage = () => {
               <div onClick={() => handleStageSelect("IVth Stage MultiPack Print")}>
                 IVth Stage MultiPack Print
               </div>
-              <div onClick={() => handleStageSelect("BSR File Generation and Upload")}>
-                BSR File Generation and Upload
-              </div>
+              
             </div>
           )}
         </div>
-
       </div>
 
+      {/* Landing Image */}
       <div className="landing-body">
         <img
           src={landingImage}
@@ -63,27 +85,16 @@ const LandingPage = () => {
         />
       </div>
 
+      {/* Master Form Modal */}
       <Modal isOpen={openMaster} onClose={() => setOpenMaster(false)}>
         <MasterForm />
       </Modal>
 
+      {/* Stage Modal */}
       <Modal isOpen={!!activeStage} onClose={closeStageModal}>
-  {activeStage === "Ist Stage" && (
-    <>
-      <h2>Stage 1</h2>
-      <Stage1Form />
-    </>
-  )}
-
- {activeStage === "IInd Stage" && (
-  <>
-    <h2>Stage 2</h2>
-    <Stage2Form onSuccess={closeStageModal} />
-  </>
-)}
-
-</Modal>
-
+        <h2>{activeStage}</h2>
+        {renderStageForm()}
+      </Modal>
 
     </div>
   );

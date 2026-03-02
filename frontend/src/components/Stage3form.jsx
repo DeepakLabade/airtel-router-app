@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../App.css";   // Make sure CSS is imported
 
 const Stage3Form = () => {
   const [formData, setFormData] = useState({
@@ -32,81 +33,74 @@ const Stage3Form = () => {
   };
 
   return (
-    <div className="stage-container">
+    <div className="invoice-bg" style={{ maxWidth: "1600px", margin: "auto" }}>
       
-      {/* Header */}
-      <div className="stage-header">
-        Airtel Rework – Stage 3
+      {/* HEADER */}
+      <div className="invoice-header">
+        Device Entry – Stage 3
       </div>
 
-      {/* Main Card */}
-      <div className="stage-card">
+      {/* MAIN CARD */}
+      <div className="invoice-card">
 
-        <h3>Device Label Details</h3>
+        <h3 className="card-title">Device Label Details</h3>
 
-        <div className="form-group">
+        <div className="form-grid">
+
           <label>Model Number :</label>
           <input
             type="text"
             name="modelNumber"
-            placeholder="Enter Model Number"
             value={formData.modelNumber}
             onChange={handleChange}
           />
-        </div>
 
-        <div className="form-group">
           <label>Serial Number :</label>
           <input
             type="text"
             name="serialNumber"
-            placeholder="Enter Serial Number"
             value={formData.serialNumber}
             onChange={handleChange}
           />
-        </div>
 
-        <div className="form-group">
           <label>MAC Address :</label>
           <input
             type="text"
             name="macAddress"
-            placeholder="Enter MAC Address"
             value={formData.macAddress}
             onChange={handleChange}
           />
-        </div>
 
-        <div className="form-group">
           <label>GPON Number :</label>
           <input
             type="text"
             name="gponNumber"
-            placeholder="Enter GPON Number"
             value={formData.gponNumber}
             onChange={handleChange}
           />
-        </div>
 
-        <div className="form-group">
           <label>Remark :</label>
           <input
             type="text"
             name="remark"
-            placeholder="Enter Remark"
             value={formData.remark}
             onChange={handleChange}
           />
+
         </div>
 
-        <div className="button-group">
-          <button className="save-btn" onClick={handleSave}>
+        <div style={{ marginTop: 25 }}>
+          <button className="btn" onClick={handleSave}>
             Save
           </button>
-          <button className="clear-btn" onClick={handleClear}>
+
+          <button
+            className="btn"
+            onClick={handleClear}
+            style={{ marginLeft: 15, backgroundColor: "red" }}
+          >
             Clear
           </button>
-          
         </div>
 
       </div>

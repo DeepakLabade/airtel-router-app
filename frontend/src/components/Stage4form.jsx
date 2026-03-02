@@ -1,145 +1,115 @@
 import { useState } from "react";
+import "../App.css";   // make sure path is correct
 
 const Stage4Form = () => {
-  const [formData, setFormData] = useState({
-    modelNo: "",
-    macAddress: "",
-    gponNo: "",
-  });
-
+  const [modelNo, setModelNo] = useState("");
+  const [macAddress, setMacAddress] = useState("");
+  const [gponNo, setGponNo] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState("");
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const validateForm = () => {
-    const { modelNo, macAddress, gponNo } = formData;
-
-    if (!modelNo || !macAddress || !gponNo) {
-      setError("All fields are required");
-      return false;
-    }
-
-    const macRegex = /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/;
-    if (!macRegex.test(macAddress)) {
-      setError("Invalid MAC Address format (AA:BB:CC:DD:EE:FF)");
-      return false;
-    }
-
-    return true;
-  };
+  const API_URL = "http://localhost:5000/api";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
 
-    if (!validateForm()) return;
+    if (!modelNo || !macAddress || !gponNo) {
+      alert("All fields required");
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/stage4/print`, {
+      const res = await fetch(`${API_URL}/print-stage4`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          modelNo,
+          macAddress,
+          gponNo,
+        }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Printing failed");
+      if (!res.ok) {
+        alert(data.message);
+      } else {
+        setMessage("Label Printed Successfully ✅");
+        setModelNo("");
+        setMacAddress("");
+        setGponNo("");
       }
 
-      setMessage(data.message);
-
-      // Clear form after success
-      setFormData({
-        modelNo: "",
-        macAddress: "",
-        gponNo: "",
-      });
-
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Stage 04 - Print Gift Box Label</h2>
+    <div className="invoice-bg" style={{ maxWidth: "1600px", margin: "auto" }}>
+      
+      {/* HEADER */}
+      <div className="invoice-header">
+        Device Entry – Stage 4
+      </div>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      {/* MAIN CARD */}
+      <div className="invoice-card">
 
-        <input
-          type="text"
-          name="modelNo"
-          placeholder="Model Number"
-          value={formData.modelNo}
-          onChange={handleChange}
-        />
+        <h3 className="card-title">
+          Stage 04 - Print Gift Box Label
+        </h3>
 
-        <input
-          type="text"
-          name="macAddress"
-          placeholder="MAC Address (AA:BB:CC:DD:EE:FF)"
-          value={formData.macAddress}
-          onChange={handleChange}
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="form-grid">
 
-        <input
-          type="text"
-          name="gponNo"
-          placeholder="GPON Number"
-          value={formData.gponNo}
-          onChange={handleChange}
-        />
+            <label>Model Number :</label>
+            <input
+              type="text"
+              value={modelNo}
+              onChange={(e) => setModelNo(e.target.value)}
+            />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Printing..." : "Print Label"}
-        </button>
+            <label>MAC Address :</label>
+            <input
+              type="text"
+              placeholder="AA:BB:CC:DD:EE:FF"
+              value={macAddress}
+              onChange={(e) => setMacAddress(e.target.value)}
+            />
 
-      </form>
+            <label>GPON Number :</label>
+            <input
+              type="text"
+              value={gponNo}
+              onChange={(e) => setGponNo(e.target.value)}
+            />
 
-      {error && <p style={styles.error}>{error}</p>}
-      {message && <p style={styles.success}>{message}</p>}
+          </div>
+
+          <div style={{ marginTop: "20px" }}>
+            <button className="btn" type="submit">
+              {loading ? "Printing..." : "Print Label"}
+            </button>
+          </div>
+        </form>
+
+        {message && (
+          <p style={{ color: "lightgreen", marginTop: "15px" }}>
+            {message}
+          </p>
+        )}
+
+      </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "400px",
-    margin: "50px auto",
-    padding: "20px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  error: {
-    color: "red",
-    marginTop: "10px",
-  },
-  success: {
-    color: "green",
-    marginTop: "10px",
-  },
 };
 
 export default Stage4Form;
