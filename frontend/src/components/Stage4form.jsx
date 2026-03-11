@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../App.css";   // make sure path is correct
+import "../App.css";
 
 const Stage4Form = () => {
   const [modelNo, setModelNo] = useState("");
@@ -10,6 +10,41 @@ const Stage4Form = () => {
 
   const API_URL = "http://localhost:5000/api";
 
+  /* ===============================
+     🔎 SEARCH BY GPON NUMBER
+  ================================== */
+  const handleSearch = async () => {
+    if (!gponNo) {
+      alert("Enter GPON Number first");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API_URL}/stage4/${gponNo}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message);
+      } else {
+        setModelNo(data.data.modelNo);
+        setMacAddress(data.data.macAddress);
+        setMessage("Device Verified ✅");
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  /* ===============================
+     🖨 PRINT LABEL
+  ================================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,7 +73,7 @@ const Stage4Form = () => {
       if (!res.ok) {
         alert(data.message);
       } else {
-        setMessage("Label Printed Successfully ✅");
+        setMessage("Gift Box Label Printed Successfully ✅");
         setModelNo("");
         setMacAddress("");
         setGponNo("");
@@ -55,41 +90,50 @@ const Stage4Form = () => {
   return (
     <div className="invoice-bg" style={{ maxWidth: "1600px", margin: "auto" }}>
       
-      {/* HEADER */}
       <div className="invoice-header">
         Device Entry – Stage 4
       </div>
 
-      {/* MAIN CARD */}
       <div className="invoice-card">
 
         <h3 className="card-title">
           Stage 04 - Print Gift Box Label
         </h3>
 
+        {/* 🔎 GPON SEARCH */}
+        <div className="form-grid">
+          <label>GPON Number :</label>
+          <input
+            type="text"
+            value={gponNo}
+            onChange={(e) => setGponNo(e.target.value)}
+          />
+
+          <button
+            type="button"
+            className="btn"
+            onClick={handleSearch}
+          >
+            {loading ? "Searching..." : "Verify"}
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit}>
+
           <div className="form-grid">
 
             <label>Model Number :</label>
             <input
               type="text"
               value={modelNo}
-              onChange={(e) => setModelNo(e.target.value)}
+              readOnly
             />
 
             <label>MAC Address :</label>
             <input
               type="text"
-              placeholder="AA:BB:CC:DD:EE:FF"
               value={macAddress}
-              onChange={(e) => setMacAddress(e.target.value)}
-            />
-
-            <label>GPON Number :</label>
-            <input
-              type="text"
-              value={gponNo}
-              onChange={(e) => setGponNo(e.target.value)}
+              readOnly
             />
 
           </div>
@@ -99,6 +143,7 @@ const Stage4Form = () => {
               {loading ? "Printing..." : "Print Label"}
             </button>
           </div>
+
         </form>
 
         {message && (

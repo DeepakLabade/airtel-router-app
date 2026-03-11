@@ -1,7 +1,12 @@
 import { useState } from "react";
-import "../App.css";   // Make sure CSS is imported
+import axios from "axios";
+import "../App.css";
 
 const Stage3Form = () => {
+  const [uid, setUid] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
   const [formData, setFormData] = useState({
     modelNumber: "",
     serialNumber: "",
@@ -10,6 +15,39 @@ const Stage3Form = () => {
     remark: "",
   });
 
+  const API_URL = "http://localhost:3000";
+
+  /* ---------------- SEARCH BY UID ---------------- */
+  const handleSearch = async () => {
+    if (!uid) {
+      alert("Please enter UID");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await axios.get(`${API_URL}/stage3/${uid}`);
+
+      if (res.data.success) {
+        setFormData({
+          modelNumber: res.data.data.modelNumber,
+          serialNumber: res.data.data.serialNumber,
+          macAddress: res.data.data.macAddress,
+          gponNumber: res.data.data.gponNumber,
+          remark: "",
+        });
+        setMessage("Data fetched successfully ✅");
+      }
+
+    } catch (error) {
+      alert(error.response?.data?.message || "UID not found");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ---------------- HANDLE INPUT CHANGE ---------------- */
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,12 +55,29 @@ const Stage3Form = () => {
     });
   };
 
-  const handleSave = () => {
-    console.log(formData);
-    alert("Stage 3 Data Saved");
+  /* ---------------- SAVE UPDATED DATA ---------------- */
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.post(`${API_URL}/stage3/update`, {
+        uid,
+        ...formData,
+      });
+
+      if (res.data.success) {
+        setMessage("Stage 3 Data Saved Successfully ✅");
+      }
+
+    } catch (error) {
+      alert(error.response?.data?.message || "Save failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClear = () => {
+    setUid("");
     setFormData({
       modelNumber: "",
       serialNumber: "",
@@ -30,18 +85,38 @@ const Stage3Form = () => {
       gponNumber: "",
       remark: "",
     });
+    setMessage("");
   };
 
   return (
     <div className="invoice-bg" style={{ maxWidth: "1600px", margin: "auto" }}>
-      
-      {/* HEADER */}
+
       <div className="invoice-header">
         Device Entry – Stage 3
       </div>
 
-      {/* MAIN CARD */}
       <div className="invoice-card">
+
+        <h3 className="card-title">Search by UID</h3>
+
+        <div className="form-grid">
+          <label>UID :</label>
+          <input
+            type="text"
+            value={uid}
+            onChange={(e) => setUid(e.target.value)}
+          />
+        </div>
+
+        <div style={{ marginTop: 15 }}>
+          <button className="btn" onClick={handleSearch}>
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+      </div>
+
+      <div className="invoice-card" style={{ marginTop: 25 }}>
 
         <h3 className="card-title">Device Label Details</h3>
 
@@ -103,7 +178,14 @@ const Stage3Form = () => {
           </button>
         </div>
 
+        {message && (
+          <p style={{ marginTop: 15, color: "lightgreen" }}>
+            {message}
+          </p>
+        )}
+
       </div>
+
     </div>
   );
 };
